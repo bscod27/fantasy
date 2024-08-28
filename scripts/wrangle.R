@@ -36,34 +36,36 @@ dat <- read.csv(paste0('../data/', filename)) %>%
 
 # one hot encode positions 
 onehot_pos <- data.frame(model.matrix(~ dat$pos + 0)) 
-colnames(onehot_pos) <- substr(colnames(onehot_pos), 4, 1000)
+colnames(onehot_pos) <- substr(colnames(onehot_pos), 5, 1000)
 
 # select features we want
 df <- dat %>%
   select(-pos) %>%
   cbind(onehot_pos) %>% 
   select(
-    player, team, ppg, year, age, starts,
-    matches('^pos|^rk_|^y_|^pass_|^rush_|^rec_|^fumb_|^score_')
+    player, team, starts_with('pos'), year, ppg, age, starts, 
+    matches('^rk_|^y_|^pass_|^rush_|^rec_|^fumb_|^score_')
   ) 
 
 
 ##### 02. Create newdat and modeldat dataframes #####
-newdat <- df %>% 
-  filter(year == maxyear) %>% 
-  select(-year)
-idx <- which(!colnames(newdat) %in% c('player', 'team'))
+# newdat
+newdat <- df %>% filter(year == maxyear) 
+idx <- which(!colnames(newdat) %in% c('player', 'team', 'year', 'posQB', 'posTE', 'posWR', 'posRB'))
 colnames(newdat)[idx] <- paste0('lag_', colnames(newdat)[idx])
 
+# traindat
 traindat <- df %>% 
   group_by(player) %>%
   arrange(player, year) %>%
   mutate(lag_ppg = lag(ppg)) %>%
-  mutate_at(vars(matches('^pos|^rk_|^y_|^pass_|^rush_|^rec_|^fumb_|^score_')), lag) %>%
-  filter(!is.na(lag_ppg)) %>%
-  select(-year)
-idx <- which(!colnames(traindat) %in% c('player', 'team', 'lag_ppg', 'ppg'))
+  mutate_at(vars(matches('^rk_|^y_|^pass_|^rush_|^rec_|^fumb_|^score_')), lag) %>%
+  filter(!is.na(lag_ppg))
+idx <- which(!colnames(traindat) %in% c('player', 'team', 'lag_ppg', 'ppg', 'year', 'posQB', 'posTE', 'posWR', 'posRB'))
 colnames(traindat)[idx] <- paste0('lag_', colnames(traindat)[idx])
+
+# check that ppg is only feature not in newdat 
+colnames(traindat)[!colnames(traindat) %in% colnames(newdat)]
 
 
 ##### 03. Write out newdat and traindat to data #####
