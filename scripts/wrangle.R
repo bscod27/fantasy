@@ -44,7 +44,6 @@ df <- df %>%
   cbind(onehot_pos) %>% 
   select(
     player, team, ppg, year, age, 
-    # contains(c('pos', 'rk_', 'pass_', 'rush_', 'rec_', 'fumb_', 'score_'))
     matches('^pos|^rk_|^pass_|^rush_|^rec_|^fumb_|^score_')
   )
 
