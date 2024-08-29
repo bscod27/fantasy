@@ -47,6 +47,12 @@ df <- dat %>%
     matches('^rk_|^y_|^pass_|^rush_|^rec_|^fumb_|^score_')
   ) 
 
+# deal with dups by grabbing most ppg per year 
+df <- df %>% 
+  group_by(player, year) %>% 
+  arrange(desc(ppg)) %>% # grab the most ppg 
+  slice(1)  
+
 
 ##### 02. Create newdat and modeldat dataframes #####
 # newdat
