@@ -1,2 +1,4 @@
-.ipynb
-.txt
+*.ipynb
+*.txt
+*.Rhistory 
+*.RData
