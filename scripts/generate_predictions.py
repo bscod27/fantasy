@@ -17,7 +17,7 @@ with open(path + 'meta_learner.pkl', 'rb') as file:
 
 # load newdata
 dat = pd.read_csv('../data/newdat.csv')
-players = dat[['player', 'team', 'posQB', 'posWR', 'posRB', 'posTE']]
+players = dat[['player', 'posQB', 'posWR', 'posRB', 'posTE']]
 lagged_dep = dat['lag_ppg']
 newdat = dat.drop(['player', 'team', 'year', 'posTE', 'lag_ppg'], axis=1)
 newdat['lag_ppg'] = lagged_dep
